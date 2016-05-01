@@ -28,12 +28,21 @@ $this->params['breadcrumbs'][] = $this->title;
             'username',
             'name',
             'surname',
-            'password',
+            // 'password',
             // 'salt',
             // 'access_token',
-            // 'create_date',
+            [
+                'attribute' => 'create_date',
+                'value' => 'create_date',
+                'filter' => \yii\jui\DatePicker::widget([
+                    'language' => 'ru',
+                    'dateFormat' => 'dd-MM-yyyy'
+                ]),
+                'format' => 'html'
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
+
 </div>
