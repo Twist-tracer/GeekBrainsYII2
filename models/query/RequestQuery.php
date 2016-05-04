@@ -1,11 +1,11 @@
 <?php
 
-namespace app\models;
+namespace app\models\query;
 
 /**
  * This is the ActiveQuery class for [[Request]].
  *
- * @see Request
+ * @see \app\models\Request
  */
 class RequestQuery extends \yii\db\ActiveQuery
 {
@@ -16,7 +16,7 @@ class RequestQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Request[]|array
+     * @return \app\models\Request[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class RequestQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Request|array|null
+     * @return \app\models\Request|array|null
      */
     public function one($db = null)
     {
