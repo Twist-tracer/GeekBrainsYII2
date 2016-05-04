@@ -7,27 +7,18 @@ class m160501_111215_create_calendar extends Migration
 {
     public function safeUp()
     {
-        $this->execute("
-            CREATE TABLE IF NOT EXISTS `gb_calendar`.`clndr_calendar` (
-              `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
-              `text` TEXT NOT NULL COMMENT '',
-              `creator` INT NOT NULL COMMENT '',
-              `date_event` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '',
-              PRIMARY KEY (`id`)  COMMENT '',
-              INDEX `fk_evrnt_note_1_idx` (`creator` ASC)  COMMENT '',
-              CONSTRAINT `fk_evrnt_note_1`
-                FOREIGN KEY (`creator`)
-                REFERENCES `gb_calendar`.`clndr_user` (`id`)
-                ON DELETE NO ACTION
-                ON UPDATE NO ACTION)
-            ENGINE = InnoDB CHARACTER SET UTF8
-        ");
+        $this->createTable('clndr_calendar', [
+            'id' => $this->primaryKey(),
+            'text' => $this->text()->notNull(),
+            'creator' => $this->integer(11)->notNull(),
+            'date_event_start' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'date_event_end' => $this->dateTime()->defaultExpression('NULL'),
+        ]);
+        $this->addForeignKey('FK_creator', 'clndr_calendar', 'creator', 'clndr_user', 'id', 'NO ACTION', 'NO ACTION');
     }
 
     public function safeDown()
     {
-        $this->execute("
-            DROP TABLE IF EXISTS `clndr_calendar`;
-        ");
+        $this->dropTable('clndr_calendar');
     }
 }

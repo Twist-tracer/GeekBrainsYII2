@@ -7,27 +7,20 @@ class m160501_075310_create_user extends Migration
 {
     public function safeUp()
     {
-        $this->execute("
-            CREATE TABLE IF NOT EXISTS `gb_calendar`.`clndr_user` (
-              `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
-              `username` VARCHAR(128) NOT NULL COMMENT '',
-              `name` VARCHAR(45) NOT NULL COMMENT '',
-              `surname` VARCHAR(45) NOT NULL COMMENT '',
-              `password` VARCHAR(255) NOT NULL COMMENT '',
-              `salt` VARCHAR(255) NOT NULL COMMENT '',
-              `access_token` VARCHAR(255) NULL DEFAULT NULL COMMENT '',
-              `create_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '',
-              PRIMARY KEY (`id`)  COMMENT '',
-              UNIQUE INDEX `username_UNIQUE` (`username` ASC)  COMMENT '',
-              UNIQUE INDEX `access_token_UNIQUE` (`access_token` ASC)  COMMENT '')
-            ENGINE = InnoDB CHARACTER SET UTF8
-        ");
+        $this->createTable('clndr_user', [
+            'id' => $this->primaryKey(),
+            'username' => $this->string(128)->notNull()->unique(),
+            'name' => $this->string(45)->notNull(),
+            'surname' => $this->string(45)->notNull(),
+            'password' => $this->string(255)->notNull(),
+            'salt' => $this->string(255)->notNull(),
+            'access_token' => $this->string(255)->defaultExpression('NULL')->unique(),
+            'create_date' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+        ]);
     }
 
     public function safeDown()
     {
-        $this->execute("
-            DROP TABLE IF EXISTS `clndr_user`;
-        ");
+        $this->dropTable('clndr_user');
     }
 }
