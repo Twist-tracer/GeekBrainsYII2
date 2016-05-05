@@ -12,7 +12,6 @@ use Yii;
  * @property integer $creator
  * @property string $date_event
  *
- * @property ClndrUser $creator0
  */
 class Calendar extends \yii\db\ActiveRecord
 {
@@ -54,9 +53,9 @@ class Calendar extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreator0()
+    public function getCreator()
     {
-        return $this->hasOne(ClndrUser::className(), ['id' => 'creator']);
+        return $this->hasOne(User::className(), ['id' => 'creator']);
     }
 
     /**

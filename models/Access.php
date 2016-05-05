@@ -12,8 +12,8 @@ use Yii;
  * @property integer $user_guest
  * @property string $date
  *
- * @property ClndrUser $userOwner
- * @property ClndrUser $userGuest
+ * @property User $userOwner
+ * @property User $userGuest
  */
 class Access extends \yii\db\ActiveRecord
 {
@@ -57,7 +57,7 @@ class Access extends \yii\db\ActiveRecord
      */
     public function getUserOwner()
     {
-        return $this->hasOne(ClndrUser::className(), ['id' => 'user_owner']);
+        return $this->hasOne(User::className(), ['id' => 'user_owner']);
     }
 
     /**
@@ -65,7 +65,7 @@ class Access extends \yii\db\ActiveRecord
      */
     public function getUserGuest()
     {
-        return $this->hasOne(ClndrUser::className(), ['id' => 'user_guest']);
+        return $this->hasOne(User::className(), ['id' => 'user_guest']);
     }
 
     /**
