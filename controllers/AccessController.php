@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\User;
 use app\models\Access;
 use app\models\search\AccessSearch;
 use yii\web\Controller;
@@ -42,6 +43,33 @@ class AccessController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    /**
+     * Creates a new Access model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionShareevent()
+    {
+        $model = new Access();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        } else {
+            $result = User::find()->asArray()->select(['id', 'name'])->where('id != :id', ['id' => Yii::$app->user->id])->all();
+
+            $users = array();
+
+            foreach ($result as $user) {
+                $users[$user['id']] = $user["name"];
+            }
+
+            return $this->render('shareEvent', [
+                'model' => $model,
+                'users' => $users,
+            ]);
+        }
     }
 
     /**

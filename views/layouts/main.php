@@ -27,7 +27,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'My Company',
+        'brandLabel' => 'Календарь',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -35,26 +35,47 @@ AppAsset::register($this);
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
+        'items' => array_merge(
+            [
+                ['label' => 'Главная', 'url' => ['/site/index']],
+            ],
+            Yii::$app->user->isGuest ?
+                [
+                    ['label' => 'О проекте', 'url' => ['/site/about']],
+                    ['label' => 'Контакты', 'url' => ['/site/contact']],
+                    ['label' => 'Войти', 'url' => ['/site/login']]
+                ]
+                    :
+                [
                     [
-                        'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
+                        'label' => 'События',
+                        'items' => [
+                            ['label' => 'Мои события', 'url' => ['/calendar/index']],
+                            '<li class="divider"></li>',
+                            ['label' => 'Мои публичные даты', 'url' => ['/calendar/publicdates']],
+                            '<li class="divider"></li>',
+                            ['label' => 'События друзей', 'url' => ['/calendar/friendevents']],
+                        ],
+                    ],
+                    ['label' => 'Поделиться', 'url' => ['/access/shareevent']],
+                    [
+                        'label' => 'Выйти (' . Yii::$app->user->identity->username . ')',
                         'url' => ['/site/logout'],
                         'linkOptions' => ['data-method' => 'post']
                     ]
-            )
-        ],
+                ]
+
+            ),
     ]);
     NavBar::end();
     ?>
 
     <div class="container">
         <?= Breadcrumbs::widget([
+            'homeLink' => [
+                'label' => Yii::t('yii', 'Главная'),
+                'url' => Yii::$app->homeUrl,
+            ],
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= $content ?>

@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\datetime\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Calendar */
@@ -14,9 +15,16 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'text')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'creator')->textInput() ?>
-
-    <?= $form->field($model, 'date_event')->textInput() ?>
+    <?= $form->field($model, 'date_event')->textInput()->widget(DateTimePicker::className(), [
+        'name' => 'date_event',
+        'options' => ['placeholder' => 'input event date here or check with datepicker'],
+        'convertFormat' => true,
+        'pluginOptions' => [
+                'format' => 'yyyy-MM-dd HH:i:00',
+                'todayHighlight' => true
+        ]
+        ]);
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

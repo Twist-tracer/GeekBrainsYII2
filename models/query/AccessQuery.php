@@ -9,10 +9,35 @@ namespace app\models\query;
  */
 class AccessQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
+    /**
+     * Condition with id
+     * @param string $date_event
+     * @return $this
+     */
+    public function withDate($date_event)
     {
-        return $this->andWhere('[[status]]=1');
-    }*/
+        return $this->andWhere(
+            'date_event = :date_event',
+            [
+                ":date_event" => $date_event
+            ]
+        );
+    }
+
+    /**
+     * Condition with $user_guest
+     * @param int $user_guest
+     * @return $this
+     */
+    public function withGuest($user_guest)
+    {
+        return $this->andWhere(
+            'user_guest = :user_guest',
+            [
+                ":user_guest" => $user_guest
+            ]
+        );
+    }
 
     /**
      * @inheritdoc

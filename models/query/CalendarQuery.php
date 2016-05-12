@@ -9,10 +9,14 @@ namespace app\models\query;
  */
 class CalendarQuery extends \yii\db\ActiveQuery
 {
-    /*public function active()
+    /**
+     * @inheritdoc
+     * @return \app\models\Calendar[]|array
+     */    
+    public function publicEvents()
     {
         return $this->andWhere('[[status]]=1');
-    }*/
+    }
 
     /**
      * @inheritdoc

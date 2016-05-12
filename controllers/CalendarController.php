@@ -4,10 +4,13 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Calendar;
+use app\models\Access;
 use app\models\search\CalendarSearch;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\data\ActiveDataProvider;
+use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * CalendarController implements the CRUD actions for Calendar model.
@@ -30,13 +33,18 @@ class CalendarController extends Controller
     }
 
     /**
-     * Lists all Calendar models.
+     * Lists my Calendar models.
      * @return mixed
      */
     public function actionIndex()
     {
         $searchModel = new CalendarSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search([
+            'CalendarSearch' => array_merge(
+                ['creator' => Yii::$app->user->id],
+                Yii::$app->request->queryParams
+            )
+        ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -45,8 +53,23 @@ class CalendarController extends Controller
     }
 
     /**
+     * Select all public events.
+     * @return mixed
+     */
+    public function actionPublicdates()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Access::find()->select(['date'])->orderBy('date'),
+        ]);
+
+        return $this->render('publicDates', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
      * Displays a single Calendar model.
-     * @param integer $id
+     * @param int $id
      * @return mixed
      */
     public function actionView($id)
@@ -54,6 +77,36 @@ class CalendarController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
+    }
+
+    /**
+     * Displays my events.
+     * @param $id
+     * @return string
+     * @throws ForbiddenHttpException
+     */
+    public function actionEvents($id)
+    {
+        $model = new Calendar();
+
+        $result = Access::checkAccess($model);
+
+        if($result)
+        {
+            switch($result) {
+                case Access::ACCESS_CREATOR:
+                    return $this->render('myEvents', [
+                        'model' => $model,
+                    ]);
+                    break;
+                case Access::ACCESS_GUEST:
+                    return $this->render('friendsEvents', [
+                        'model' => $model,
+                    ]);
+                    break;
+            }
+        }
+        throw new ForbiddenHttpException("Not allowed! ");
     }
 
     /**

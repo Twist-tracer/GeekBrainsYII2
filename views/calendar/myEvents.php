@@ -7,13 +7,12 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\search\CalendarSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Calendars');
+$this->title = Yii::t('app', 'myEvents');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="calendar-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
         <?= Html::a(Yii::t('app', 'Create Calendar'), ['create'], ['class' => 'btn btn-success']) ?>
@@ -25,7 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'text:ntext',
+            'text',
+            'creator',
             'date_event',
 
             ['class' => 'yii\grid\ActionColumn'],

@@ -17,6 +17,11 @@ use Yii;
  */
 class Access extends \yii\db\ActiveRecord
 {
+
+    const ACCESS_CREATOR = 1;
+    const ACCESS_GUEST = 2;
+
+
     /**
      * @inheritdoc
      */
@@ -31,12 +36,25 @@ class Access extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['user_owner', 'user_guest', 'date'], 'required'],
-            [['user_owner', 'user_guest'], 'integer'],
+            [['user_guest', 'date'], 'required'],
+            [['user_guest'], 'integer'],
             [['date'], 'safe'],
-            [['user_owner'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_owner' => 'id']],
             [['user_guest'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_guest' => 'id']],
         ];
+    }
+
+    /**
+     * Before save new access owner is current user
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave ($insert)
+    {
+        if ($this->getIsNewRecord())
+        {
+            $this->user_owner = Yii::$app->user->id;
+        }
+        return parent::beforeSave($insert);
     }
 
     /**
@@ -66,6 +84,28 @@ class Access extends \yii\db\ActiveRecord
     public function getUserGuest()
     {
         return $this->hasOne(User::className(), ['id' => 'user_guest']);
+    }
+
+    /**
+     * Check access current user by note
+     * @param Calendar $model
+     * @return bool|int
+     */
+    public static function checkAccess($model)
+    {
+        if($model->creator == Yii::$app->user->id)
+        {
+            return self::ACCESS_CREATOR;
+        }
+        $accessNote = self::find()
+            ->withDate($model->date_event)
+            ->withGuest(Yii::$app->user->id)
+            ->exists();
+        
+        if($accessNote)
+            return self::ACCESS_GUEST;
+
+        return false;
     }
 
     /**

@@ -29,12 +29,26 @@ class Calendar extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['text', 'creator'], 'required'],
+            [['text', 'date_event'], 'required'],
             [['text'], 'string'],
             [['creator'], 'integer'],
             [['date_event'], 'safe'],
             [['creator'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['creator' => 'id']],
         ];
+    }
+
+    /**
+     * Before save new note creator is current user
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave ($insert)
+    {
+        if ($this->getIsNewRecord())
+        {
+            $this->creator = Yii::$app->user->id;
+        }
+        return parent::beforeSave($insert);
     }
 
     /**
