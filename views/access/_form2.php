@@ -14,10 +14,11 @@ use yii\jui\DatePicker;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'user_guest')->dropDownList($users);  ?>
+    <label class="control-label" for="access-user_guest">Выберете пользователя</label>
+    <?= $form->field($model, 'user_guest', ['template' => '{input}{hint}{error}'])->dropDownList($users);  ?>
 
-    <?= $form->field($model, 'date')->textInput(['class' => 'form-control'])->widget(DatePicker::className(), [
-        'name' => 'date',
+    <label class="control-label" for="access-date">Дата</label>
+    <?= $form->field($model, 'date', ['template' => '{input}{hint}{error}'])->widget(DatePicker::className(), [
         'language' => 'ru',
         'dateFormat' => 'yyyy-MM-dd',
     ]);

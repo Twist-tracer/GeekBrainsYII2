@@ -7,7 +7,6 @@ use app\models\Calendar;
 use app\models\Access;
 use app\models\search\CalendarSearch;
 use yii\filters\VerbFilter;
-use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -53,21 +52,6 @@ class CalendarController extends Controller
     }
 
     /**
-     * Select all public events.
-     * @return mixed
-     */
-    public function actionPublicdates()
-    {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Access::find()->select(['date'])->orderBy('date'),
-        ]);
-
-        return $this->render('publicDates', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
      * Displays a single Calendar model.
      * @param int $id
      * @return mixed
@@ -80,33 +64,27 @@ class CalendarController extends Controller
     }
 
     /**
-     * Displays my events.
+     * Routes to the shared events view with selected user_owner
+     * and share date for logged user as user_guest
+     *
      * @param $id
+     * @param $date
      * @return string
-     * @throws ForbiddenHttpException
      */
-    public function actionEvents($id)
+    public function actionShared($id, $date)
     {
-        $model = new Calendar();
+        $searchModel = new CalendarSearch();
 
-        $result = Access::checkAccess($model);
+        $dataProvider = $searchModel->search([
+            'query' => Calendar::find()->withCreator($id)->withDate($date)
+        ]);
 
-        if($result)
-        {
-            switch($result) {
-                case Access::ACCESS_CREATOR:
-                    return $this->render('myEvents', [
-                        'model' => $model,
-                    ]);
-                    break;
-                case Access::ACCESS_GUEST:
-                    return $this->render('friendsEvents', [
-                        'model' => $model,
-                    ]);
-                    break;
-            }
-        }
-        throw new ForbiddenHttpException("Not allowed! ");
+        return $this->render('shared', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'id' => $id,
+            'date' => $date
+        ]);
     }
 
     /**

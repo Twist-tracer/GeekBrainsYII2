@@ -3,12 +3,12 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\User;
 use app\models\Access;
 use app\models\search\AccessSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * AccessController implements the CRUD actions for Access model.
@@ -25,6 +25,17 @@ class AccessController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['Myaccess', 'friends', 'dates', 'create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['Myaccess', 'friends', 'dates', 'create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
                 ],
             ],
         ];
@@ -54,22 +65,47 @@ class AccessController extends Controller
     {
         $model = new Access();
 
+        $users = $model->getAllUsers();
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            $result = User::find()->asArray()->select(['id', 'name'])->where('id != :id', ['id' => Yii::$app->user->id])->all();
-
-            $users = array();
-
-            foreach ($result as $user) {
-                $users[$user['id']] = $user["name"];
-            }
-
             return $this->render('shareEvent', [
                 'model' => $model,
                 'users' => $users,
             ]);
         }
+    }
+
+    /**
+     * Select all public dates.
+     * @return mixed
+     */
+    public function actionPublicdates()
+    {
+        $model = new Access();
+        
+        $dates = $model->getAllSharedDates();
+
+        return $this->render('publicDates', [
+            'dates' => $dates,
+        ]);
+    }
+
+    /**
+     * Show the Users with shared Dates for logged User
+     *
+     * @return mixed
+     */
+    public function actionFriendsevents()
+    {
+        $model = new Access();
+
+        $dates = $model->getAllFriendsEvents();
+
+        return $this->render('friendsEvents', [
+            'dates' => $dates,
+        ]);
     }
 
     /**

@@ -52,9 +52,9 @@ AppAsset::register($this);
                         'items' => [
                             ['label' => 'Мои события', 'url' => ['/calendar/index']],
                             '<li class="divider"></li>',
-                            ['label' => 'Мои публичные даты', 'url' => ['/calendar/publicdates']],
+                            ['label' => 'Мои публичные даты', 'url' => ['/access/publicdates']],
                             '<li class="divider"></li>',
-                            ['label' => 'События друзей', 'url' => ['/calendar/friendevents']],
+                            ['label' => 'События друзей', 'url' => ['/access/friendsevents']],
                         ],
                     ],
                     ['label' => 'Поделиться', 'url' => ['/access/shareevent']],

@@ -8,7 +8,7 @@ use yii\helpers\Html;
 /* @var $users array with 'id' => 'name' */
 
 $this->title = Yii::t('app', 'Поделиться');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Публичные записи'), 'url' => ['publicevents']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Публичные даты'), 'url' => ['publicdates']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="access-create">

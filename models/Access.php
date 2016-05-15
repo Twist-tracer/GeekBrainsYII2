@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "clndr_access".
@@ -64,9 +65,9 @@ class Access extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'user_owner' => Yii::t('app', 'User Owner'),
-            'user_guest' => Yii::t('app', 'User Guest'),
-            'date' => Yii::t('app', 'Date'),
+            'user_owner' => Yii::t('app', 'Владелец'),
+            'user_guest' => Yii::t('app', 'Гость'),
+            'date' => Yii::t('app', 'Дата'),
         ];
     }
 
@@ -86,6 +87,90 @@ class Access extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'user_guest']);
     }
 
+    /**
+     * @return array $users 
+     */
+    public function getAllUsers()
+    {
+        $result = User::find()
+            ->asArray()
+            ->select([
+                'id',
+                'CONCAT(`name`, \' \', `surname`, \' (\', `username` , \')\') as name'
+            ])
+            ->where('id != :id', ['id' => Yii::$app->user->id])
+            ->all();
+
+        $users = array();
+
+        foreach ($result as $user) {
+            $users[$user['id']] = $user["name"];
+        }
+
+        return $users;
+    }
+
+    /**
+     * @return array $sharedDates
+     */
+    public function getAllSharedDates()
+    {
+        $sharedDates = $this::find()
+            ->asArray()
+            ->select(['date as label', 'group_concat(CONCAT(`name`, \' \', `surname`, \' (\', `username` , \')\')) as content'])
+            ->where('user_owner = :id', ['id' => Yii::$app->user->id])
+            ->leftJoin('clndr_user', 'clndr_user.id = user_guest')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->all();
+
+        $i = 0;
+        while ($i < count($sharedDates)) {
+            $sharedDates[$i]['content'] = explode(',', $sharedDates[$i]['content']);
+            $i++;
+        }
+        
+        return $sharedDates;
+    }
+
+    /**
+     * @return array $friendsEvents
+     */
+    public function getAllFriendsEvents()
+    {
+        $friendsEvents = $this::find()
+            ->asArray()
+            ->select(['clndr_user.id', 'CONCAT(`name`, \' \', `surname`, \' (\', `username` , \')\') as label', 'group_concat(date) as content'])
+            ->where('user_guest = :id', ['id' => Yii::$app->user->id])
+            ->leftJoin('clndr_user', 'clndr_user.id = user_owner')
+            ->groupBy('label')
+            ->all();
+
+        $i = 0;
+        while ($i < count($friendsEvents)) {
+            if(mb_strpos($friendsEvents[$i]['content'], ',', 0, 'UTF-8'))
+            {
+                foreach(explode(',', $friendsEvents[$i]['content']) as $date)
+                {
+                    $temp[] = Html::a(
+                        $date,
+                        ['/calendar/shared/'.$friendsEvents[$i]['id'].'?date='.$date]
+                    );
+                    $friendsEvents[$i]['content'] = $temp;
+                }
+            } else
+            {
+                $friendsEvents[$i]['content'] = Html::a(
+                    $friendsEvents[$i]['content'],
+                    ['/calendar/shared/'.$friendsEvents[$i]['id'].'?date='.$friendsEvents[$i]['content']]
+                );
+            }
+            $i++;
+        }
+
+        return $friendsEvents;
+    }
+    
     /**
      * Check access current user by note
      * @param Calendar $model

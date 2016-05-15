@@ -1,13 +1,14 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ListView;
+use yii\bootstrap\Collapse;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Calendar */
+/* @var $dates */
 
 $this->title = 'Публичные даты';
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Calendars'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Мои события'), 'url' => ['/calendar/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="calendar-view">
@@ -15,9 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?=
-        ListView::widget([
-            'dataProvider' => $dataProvider,
-        ]);
+        Collapse::widget([
+           'items' => $dates
+       ]);
     ?>
 
 </div>

@@ -12,6 +12,8 @@ use app\models\Access;
  */
 class AccessSearch extends Access
 {
+    public $groupBy; //For grouping
+    
     /**
      * @inheritdoc
      */
@@ -41,7 +43,11 @@ class AccessSearch extends Access
      */
     public function search($params)
     {
-        $query = Access::find();
+        if (isset($params['query'])) {
+            $query = $params['query'];
+        } else {
+            $query = Access::find();
+        }
 
         // add conditions that should always apply here
 
@@ -51,10 +57,16 @@ class AccessSearch extends Access
 
         $this->load($params);
 
-        if (!$this->validate()) {
+        if (!$this->validate())
+        {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
+        }
+
+        if($this->groupBy)
+        {
+            $query->groupBy($this->groupBy);
         }
 
         // grid filtering conditions

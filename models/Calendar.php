@@ -58,9 +58,9 @@ class Calendar extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'text' => Yii::t('app', 'Text'),
-            'creator' => Yii::t('app', 'Creator'),
-            'date_event' => Yii::t('app', 'Date Event'),
+            'text' => Yii::t('app', 'Событие'),
+            'creator' => Yii::t('app', 'Автор'),
+            'date_event' => Yii::t('app', 'Дата и время события'),
         ];
     }
 
@@ -70,6 +70,17 @@ class Calendar extends \yii\db\ActiveRecord
     public function getCreator()
     {
         return $this->hasOne(User::className(), ['id' => 'creator']);
+    }
+
+    /**
+     * Return dat in format for view
+     *
+     * @return mixed
+     */
+    public function getDateTimeEvent()
+    {
+        $date = new \DateTime($this->date_event);
+        return $date->format('d/m/Y h:m:i');
     }
 
     /**
