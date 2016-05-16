@@ -29,10 +29,10 @@ class AccessController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['Myaccess', 'friends', 'dates', 'create', 'update', 'delete'],
+                'only' => ['index', 'friends', 'dates', 'create', 'update', 'delete'],
                 'rules' => [
                     [
-                        'actions' => ['Myaccess', 'friends', 'dates', 'create', 'update', 'delete'],
+                        'actions' => ['index', 'friends', 'dates', 'create', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -48,7 +48,11 @@ class AccessController extends Controller
     public function actionIndex()
     {
         $searchModel = new AccessSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search([
+            'AccessSearch' => [
+                'user_owner' => Yii::$app->user->id
+            ]
+        ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -147,6 +151,8 @@ class AccessController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        
+        // TODO Edit view file
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

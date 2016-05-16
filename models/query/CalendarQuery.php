@@ -2,12 +2,14 @@
 
 namespace app\models\query;
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[\app\models\Calendar]].
  *
  * @see \app\models\Calendar
  */
-class CalendarQuery extends \yii\db\ActiveQuery
+class CalendarQuery extends ActiveQuery
 {
     /**
      * With Date for checking DATETIME by DATE
@@ -17,7 +19,7 @@ class CalendarQuery extends \yii\db\ActiveQuery
      */
     public function withDate($date)
     {
-        return $this->andWhere('date_event_start LIKE :date', [':date' => $date.'%']);
+        return $this->andWhere('date_event LIKE :date', [':date' => $date.'%']);
     }
 
     /**

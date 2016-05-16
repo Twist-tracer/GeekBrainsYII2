@@ -17,9 +17,9 @@ class AccessQuery extends \yii\db\ActiveQuery
     public function withDate($date_event)
     {
         return $this->andWhere(
-            'date_event = :date_event',
+            'date = :date',
             [
-                ":date_event" => $date_event
+                ":date" => $date_event
             ]
         );
     }

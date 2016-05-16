@@ -154,7 +154,7 @@ class Access extends \yii\db\ActiveRecord
                 {
                     $temp[] = Html::a(
                         $date,
-                        ['/calendar/shared/'.$friendsEvents[$i]['id'].'?date='.$date]
+                        ['/calendar/shared/'.$friendsEvents[$i]['id'].'/'.$date]
                     );
                     $friendsEvents[$i]['content'] = $temp;
                 }
@@ -162,7 +162,7 @@ class Access extends \yii\db\ActiveRecord
             {
                 $friendsEvents[$i]['content'] = Html::a(
                     $friendsEvents[$i]['content'],
-                    ['/calendar/shared/'.$friendsEvents[$i]['id'].'?date='.$friendsEvents[$i]['content']]
+                    ['/calendar/shared/'.$friendsEvents[$i]['id'].'/'.$friendsEvents[$i]['content']]
                 );
             }
             $i++;
@@ -182,15 +182,26 @@ class Access extends \yii\db\ActiveRecord
         {
             return self::ACCESS_CREATOR;
         }
-        $accessNote = self::find()
-            ->withDate($model->date_event)
+        $accessCalendar = self::find()
+            ->withDate($model->getDateEvent())
             ->withGuest(Yii::$app->user->id)
             ->exists();
         
-        if($accessNote)
+        if($accessCalendar)
             return self::ACCESS_GUEST;
 
         return false;
+    }
+
+    /**
+     * Check logged user is creator or not
+     *
+     * @param Calendar $model
+     * @return bool
+     */
+    public static function checkIsCreator ($model)
+    {
+        return self::checkAccess($model) == self::ACCESS_CREATOR;
     }
 
     /**

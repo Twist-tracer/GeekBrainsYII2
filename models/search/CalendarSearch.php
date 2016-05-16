@@ -41,7 +41,11 @@ class CalendarSearch extends Calendar
      */
     public function search($params)
     {
-        $query = Calendar::find();
+        if (isset($params['query'])) {
+            $query = $params['query'];
+        } else {
+            $query = Calendar::find();
+        }
 
         // add conditions that should always apply here
 

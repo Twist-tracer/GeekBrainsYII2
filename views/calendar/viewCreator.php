@@ -6,8 +6,8 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Calendar */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Мои события'), 'url' => ['index']];
+$this->title = 'Событие от '. $model->getDateTimeEvent();
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Мои События'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="calendar-view">
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a(Yii::t('app', 'Удалить'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                'confirm' => Yii::t('app', 'Вы уверены, что хотите удалить событие?'),
                 'method' => 'post',
             ],
         ]) ?>
@@ -28,11 +28,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
             'text:ntext',
-            'creator',
-            'date_event',
+            [
+                'attribute' => 'date_event',
+                'value' => $model->getDateTimeEvent()
+            ],
         ],
     ]) ?>
-
 </div>

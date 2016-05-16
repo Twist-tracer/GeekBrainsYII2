@@ -7,6 +7,7 @@ use app\models\Calendar;
 use app\models\Access;
 use app\models\search\CalendarSearch;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -26,6 +27,17 @@ class CalendarController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'shared','create', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'actions' => ['index', 'shared', 'create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
                 ],
             ],
         ];
@@ -53,14 +65,34 @@ class CalendarController extends Controller
 
     /**
      * Displays a single Calendar model.
-     * @param int $id
-     * @return mixed
+     *
+     * @param $id
+     * @return string
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $model = $this->findModel($id);
+
+        $result = Access::checkAccess($model);
+
+        if($result)
+        {
+            switch($result) {
+                case Access::ACCESS_CREATOR:
+                    return $this->render('viewCreator', [
+                        'model' => $model,
+                    ]);
+                    break;
+                case Access::ACCESS_GUEST:
+                    return $this->render('viewGuest', [
+                        'model' => $model,
+                    ]);
+                    break;
+            }
+        }
+        throw new ForbiddenHttpException("Not allowed! ");
     }
 
     /**
@@ -108,33 +140,46 @@ class CalendarController extends Controller
     /**
      * Updates an existing Calendar model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
+     *
+     * @param $id
+     * @return string|\yii\web\Response
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        if (Access::checkIsCreator($model)) {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         }
+        throw new ForbiddenHttpException("Not allowed to update event of other user", 403);
     }
 
     /**
      * Deletes an existing Calendar model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
+     *
      * @param integer $id
      * @return mixed
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
 
-        return $this->redirect(['index']);
+        if (Access::checkIsCreator($model)) {
+            $model->delete();
+            return $this->redirect(['index']);
+        }
+        throw new ForbiddenHttpException("Not allowed to delete event of other user", 403);
     }
 
     /**

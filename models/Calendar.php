@@ -12,6 +12,7 @@ use Yii;
  * @property integer $creator
  * @property string $date_event
  *
+ * @property User $user
  */
 class Calendar extends \yii\db\ActiveRecord
 {
@@ -67,9 +68,20 @@ class Calendar extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreator()
+    public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'creator']);
+    }
+
+    /**
+     * Return date in format for Access checking
+     *
+     * @return mixed
+     */
+    public function getDateEvent()
+    {
+        $date = new \DateTime($this->date_event);
+        return $date->format('Y-m-d');
     }
 
     /**

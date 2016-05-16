@@ -12,6 +12,7 @@ use app\models\User;
 
 $this->title = Yii::t('app', 'События друга').' '.User::findOne($id)->name . ' ' . User::findOne($id)->surname
     .' за '.Yii::$app->formatter->asDate($date, 'dd/MM/yyyy');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'События друзей'), 'url' => ['/access/friendsevents']];;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="calendar-index">
@@ -31,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             //'creator',
-            //'date_event_start',
+            //'date_event,
             [
                 'attribute' => 'date_event',
                 'content' => function($model){
